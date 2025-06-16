@@ -3,11 +3,14 @@ from modelos.cita import Cita
 
 def ejecutar_menu():
     while True:
-        rol = input("\n¿Ingresas como Estudiante o Docente? (E/D): ").strip().upper()
+        rol = input("\n¿Ingresas como Estudiante, Docente o quieres Salir? (E/D/S): ").strip().upper()
         if rol == "D":
             menu_docente()
         elif rol == "E":
             menu_estudiante()
+        elif rol == "S":
+            print("Programa finalizado")
+            break
         else:
             print("Rol no válido. Intente de nuevo.")
 
