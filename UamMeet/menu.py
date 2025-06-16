@@ -83,7 +83,7 @@ def menu_estudiante():
         elif opc == "3":
             correo = input("Ingrese su correo para filtrar: ").strip().lower()
             citas_usuario = [
-            c for c in operaciones.obtener_citas()
+            c for c in cita_dao.obtener_citas()
             if c.estudiante.correo.strip().lower() == correo
             ]
     
