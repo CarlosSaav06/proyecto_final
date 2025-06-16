@@ -106,7 +106,11 @@ def menu_estudiante():
                     print(f"{i}. {c}")
                 try:
                     i = int(input("Cancelar cita #: ")) - 1
+
                     citas_dao.eliminar_cita(citas_dao.obtener_citas().index(citas[i]))
+
+                    cita_dao.eliminar_cita(cita_dao.obtener_citas().index(citas[i]))
+
                     print(" Cita cancelada.")
                 except Exception:
                     print(" Datos inválidos.")
