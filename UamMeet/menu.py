@@ -1,13 +1,19 @@
 from dao import cita_dao, disponibilidad_dao, estudiante_dao
 from modelos.cita import Cita
+from modelos.docente import Docente
+from modelos.disponibilidad import Disponibilidad
+
 
 def ejecutar_menu():
     while True:
-        rol = input("\n¿Ingresas como Estudiante o Docente? (E/D): ").strip().upper()
+        rol = input("\n¿Ingresas como Estudiante, Docente o quieres Salir? (E/D/S): ").strip().upper()
         if rol == "D":
             menu_docente()
         elif rol == "E":
             menu_estudiante()
+        elif rol == "S":
+            print("Programa finalizado")
+            break
         else:
             print("Rol no válido. Intente de nuevo.")
 
@@ -21,10 +27,21 @@ def menu_docente():
 
         opc = input("Opción: ")
         if opc == "1":
-            disponibilidad_dao.agregar_disponibilidad(input("Día: "), input("Hora: "))
+            print("\n📅 Registrar nueva disponibilidad")
+            nombre = input("Nombre del docente: ")
+            correo = input("Correo del docente: ")
+            docente = Docente(nombre, correo)
+
+            dia = input("Día disponible: ")
+            hora = input("Hora disponible: ")
+
+            disponibilidad = Disponibilidad(dia, hora, docente)
+            disponibilidad_dao.agregar_disponibilidad(disponibilidad)
+
+            print("✅ Disponibilidad registrada correctamente.")
         elif opc == "2":
-            for i, (d, h) in enumerate(disponibilidad_dao.obtener_disponibilidad(), 1):
-                print(f"{i}. {d} {h}")
+           for i, disp in enumerate(disponibilidad_dao.obtener_disponibilidad(), 1):
+                print(f"{i}. {disp}")
         elif opc == "3":
             pendientes = [c for c in cita_dao.obtener_citas() if c.estado == "Pendiente"]
             if not pendientes:
@@ -57,8 +74,8 @@ def menu_estudiante():
 
         opc = input("Opción: ")
         if opc == "1":
-            for i, (d, h) in enumerate(disponibilidad_dao.obtener_disponibilidad(), 1):
-                print(f"{i}. {d} {h}")
+            for i, disp in enumerate(disponibilidad_dao.obtener_disponibilidad(), 1):
+                print(f"{i}. {disp}")
         elif opc == "2":
             nombre = input("Nombre: ")
             correo = input("Correo: ")
@@ -69,12 +86,14 @@ def menu_estudiante():
                      continue
 
             else:
-                for i, (d, h) in enumerate(disp, 1):
-                    print(f"{i}. {d} {h}")
+                for i, disponibilidad in enumerate(disp, 1):
+                    print(f"{i}. {disponibilidad}")
                 try:
                     i = int(input("Elija horario: ")) - 1
-                    d, h = disp[i]
-                    cita = Cita(estudiante, d, h)
+                    seleccion = disp[i]
+                    cita = Cita(estudiante, seleccion.dia, seleccion.hora)
+                    cita_dao.agregar_cita(cita)
+                    disponibilidad_dao.eliminar_disponibilidad(i)
                     cita_dao.agregar_cita(cita)
                     disponibilidad_dao.eliminar_disponibilidad(i)
                     print("✅ Cita agendada.")
@@ -83,7 +102,7 @@ def menu_estudiante():
         elif opc == "3":
             correo = input("Ingrese su correo para filtrar: ").strip().lower()
             citas_usuario = [
-            c for c in operaciones.obtener_citas()
+            c for c in cita_dao.obtener_citas()
             if c.estudiante.correo.strip().lower() == correo
             ]
     
