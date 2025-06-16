@@ -65,7 +65,7 @@ def menu_estudiante():
             estudiante = estudiante_dao.registrar_estudiante(nombre, correo)
             disp = disponibilidad_dao.obtener_disponibilidad()
             if not disp:
-                     print("❌ No hay horarios disponibles. Intenta más tarde o consulta con tu docente.")
+                     print(" No hay horarios disponibles. Intenta más tarde o consulta con tu docente.")
                      continue
 
             else:
@@ -77,9 +77,9 @@ def menu_estudiante():
                     cita = Cita(estudiante, d, h)
                     cita_dao.agregar_cita(cita)
                     disponibilidad_dao.eliminar_disponibilidad(i)
-                    print("✅ Cita agendada.")
+                    print(" Cita agendada.")
                 except Exception:
-                    print("❌ Entrada inválida.")
+                    print(" Entrada inválida.")
         elif opc == "3":
             correo = input("Ingrese su correo para filtrar: ").strip().lower()
             citas_usuario = [
@@ -88,9 +88,9 @@ def menu_estudiante():
             ]
     
             if not citas_usuario:
-              print("📭 No se encontraron citas asociadas a este correo.")
+              print(" No se encontraron citas asociadas a este correo.")
             else:
-              print("📅 Tus citas:")
+              print(" Tus citas:")
             for i, c in enumerate(citas_usuario, 1):
               print(f"{i}. {c}")
 
@@ -107,9 +107,9 @@ def menu_estudiante():
                 try:
                     i = int(input("Cancelar cita #: ")) - 1
                     cita_dao.eliminar_cita(cita_dao.obtener_citas().index(citas[i]))
-                    print("🗑️ Cita cancelada.")
+                    print(" Cita cancelada.")
                 except Exception:
-                    print("❌ Datos inválidos.")
+                    print(" Datos inválidos.")
         elif opc == "5":
             break
         else:
