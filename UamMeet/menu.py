@@ -17,7 +17,7 @@ def ejecutar_menu():
         else:
             print("Rol no válido. Intente de nuevo.")
 
-def menu_docente():
+def menu_docente(correo):
     while True:
         print("\n--- Menú Docente ---")
         print("1. Registrar disponibilidad")
@@ -44,8 +44,8 @@ def menu_docente():
            if not disponibilidad:
                print("No hay horarios disponibles en este momento.")
            else:
-               for i, (dia, hora) in enumerate(disponibilidad, 1):
-                   print(f"{i}. {dia} a las {hora}")
+               for i, disp in enumerate(disponibilidad_dao.obtener_disponibilidad(), 1):
+                print(f"{i}. {disp.dia} {disp.hora}")
 
         elif opc == "3":
             pendientes = [c for c in citas_dao.obtener_citas() if c.estado == "Pendiente"]
@@ -68,7 +68,7 @@ def menu_docente():
         else:
             print("Opción no válida.")
 
-def menu_estudiante():
+def menu_estudiante(correo):
     while True:
         print("\n--- Menú Estudiante ---")
         print("1. Ver disponibilidad")
@@ -83,8 +83,9 @@ def menu_estudiante():
             if not disponibilidad:
                 print("No hay horarios disponibles en este momento.")
             else:
-                for i, (dia, hora) in enumerate(disponibilidad, 1):
-                    print(f"{i}. {dia} a las {hora}")
+                for i, disp in enumerate(disponibilidad_dao.obtener_disponibilidad(), 1):
+                     print(f"{i}. {disp.dia} {disp.hora}")
+
                     
         elif opc == "2":
             nombre = input("Nombre: ")
@@ -116,7 +117,7 @@ def menu_estudiante():
                 except Exception:
                     print(" Entrada inválida.")
         elif opc == "3":
-            correo = input("Ingrese su correo para filtrar: ").strip().lower()
+
             citas_usuario = [
 
             c for c in citas_dao.obtener_citas()
@@ -135,7 +136,7 @@ def menu_estudiante():
 
     
         elif opc == "4":
-            correo = input("Ingrese su correo: ")
+            
             citas = [c for c in citas_dao.obtener_citas() if c.estudiante.correo == correo]
             if not citas:
                 print("No tiene citas.")
