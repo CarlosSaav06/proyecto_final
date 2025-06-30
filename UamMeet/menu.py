@@ -8,11 +8,11 @@ def ejecutar_menu():  # ciclo principal que pregunta si el usuario ingresa como 
     while True:
         rol = input("\n¿Ingresas como Estudiante, Docente o quieres Salir? (E/D/S): ").strip().upper()
         if rol == "D":  # Si es docente, se llama al menu de docente
-            menu_docente()
+            menu_docente(correo)
         elif rol == "E":  # Si es estudiante, se llama al menu de estudiante
-            menu_estudiante()
+            menu_estudiante(correo)
         elif rol == "S":
-            print("Programa finalizado")
+            print("!Hasta luego!")
             break
         else:
             print("Rol no válido. Intente de nuevo.")
@@ -23,7 +23,7 @@ def menu_docente(correo):  # Menu para que el docente realice diferentes accione
         print("1. Registrar disponibilidad")
         print("2. Ver disponibilidad")
         print("3. Ver y gestionar citas")
-        print("4. Salir")
+        print("4. Volver al menú principal")
 
         opc = input("Opción: ")
         if opc == "1":  # registrar nueva disponibilidad de horario para citas
@@ -69,7 +69,7 @@ def menu_docente(correo):  # Menu para que el docente realice diferentes accione
 
         elif opc == "4": # Salir del menú de los docentes
             print("Saliendo del menú docente.")
-            break
+            return
         else:
             print("Opción no válida.")
 
