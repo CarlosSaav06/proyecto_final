@@ -7,15 +7,36 @@ from modelos.disponibilidad import Disponibilidad
 def ejecutar_menu():  # ciclo principal que pregunta si el usuario ingresa como Estudiante, Docente o si quiere salir
     while True:
         rol = input("\n¿Ingresas como Estudiante, Docente o quieres Salir? (E/D/S): ").strip().upper()
-        if rol == "D":  # Si es docente, se llama al menu de docente
-            menu_docente(correo)
-        elif rol == "E":  # Si es estudiante, se llama al menu de estudiante
-            menu_estudiante(correo)
+        if rol in ("D", "E"):
+            correo = input("Correo: ").strip().lower()
+            contrasena = input("Contraseña: ").strip()
+            if validar_usuario(rol, correo, contrasena):
+                if rol == "D":
+                    menu_docente(correo)
+                else:
+                    menu_estudiante(correo)
+            else:
+                print("Correo o contraseña incorrectos.")
         elif rol == "S":
             print("!Hasta luego!")
             break
         else:
             print("Rol no válido. Intente de nuevo.")
+
+# Debes implementar esta función según cómo almacenes tus usuarios:
+def validar_usuario(rol, correo, contrasena):
+    # Ejemplo si tienes un archivo usuarios.txt con líneas: correo,contrasena,rol
+    try:
+        with open("usuarios.txt", "r") as f:
+            for linea in f:
+                datos = linea.strip().split(",")
+                if len(datos) == 3:
+                    c, p, r = datos
+                    if c.strip().lower() == correo and p == contrasena and r.upper() == rol:
+                        return True
+    except FileNotFoundError:
+        pass
+    return False
 
 def menu_docente(correo):  # Menu para que el docente realice diferentes acciones
     while True:
@@ -51,7 +72,11 @@ def menu_docente(correo):  # Menu para que el docente realice diferentes accione
                 print(f"{i}. {disp.dia} {disp.hora}")
 
         elif opc == "3":  # Ver y gestionar citas pendientes, ya sea aceptarlas o rechazarlas
-            pendientes = [c for c in citas_dao.obtener_citas() if c.estado == "Pendiente"]
+            # Filtrar solo las citas pendientes del docente actual
+            pendientes = [
+                c for c in citas_dao.obtener_citas()
+                if c.estado == "Pendiente" and hasattr(c, "docente") and c.docente.correo == correo
+            ]
             if not pendientes:
                 print("No hay citas pendientes.")
                 continue
@@ -94,34 +119,24 @@ def menu_estudiante(correo):  # Menu para que el estudiante pueda realizar difer
                     
         elif opc == "2": # Agendar una cita en un horario disponible
             nombre = input("Nombre: ")
-            correo = input("Correo: ")
-             # Registrar estudiante o recuperar existente
             estudiante = estudiante_dao.registrar_estudiante(nombre, correo)
             disp = disponibilidad_dao.obtener_disponibilidad()
             if not disp:
-                     print(" No hay horarios disponibles. Intenta más tarde o consulta con tu docente.")
-                     continue
-
-            else:  # Mostrar horarios disponibles para elegir
-                for i, disponibilidad in enumerate(disp, 1):
-                    print(f"{i}. {disponibilidad}")
+                print(" No hay horarios disponibles. Intenta más tarde o consulta con tu docente.")
+                continue
+            else:
+                for idx, disponibilidad in enumerate(disp, 1):
+                    print(f"{idx}. {disponibilidad}")
                 try:
                     i = int(input("Elija horario: ")) - 1
-                    
-                     # seleccionar dia y hora escogidos
                     seleccion = disp[i]
-                    # Crear nueva cita con estudiante y horario seleccionado
-                    cita = Cita(estudiante, seleccion.dia, seleccion.hora)
-                    citas_dao.agregar_cita(cita)  # Guardar cita
-
-                    # Eliminar la disponibilidad porque ya fue usada
-                    disponibilidad_dao.eliminar_disponibilidad(i)
+                    docente = seleccion.docente
+                    cita = Cita(estudiante, seleccion.dia, seleccion.hora, docente)
                     citas_dao.agregar_cita(cita)
-
                     disponibilidad_dao.eliminar_disponibilidad(i)
                     print(" Cita agendada.")
-                except Exception:
-                    print(" Entrada inválida.")
+                except (ValueError, IndexError, AttributeError) as e:
+                    print("Por favor, ingresa un número válido de la lista.")
 
         elif opc == "3":
             # Mostrar todas las citas del estudiante con ese correo
@@ -152,12 +167,7 @@ def menu_estudiante(correo):  # Menu para que el estudiante pueda realizar difer
                     print(f"{i}. {c}")
                 try:
                     i = int(input("Cancelar cita #: ")) - 1
-                     # Eliminar la cita seleccionada de la base de datos
-
                     citas_dao.eliminar_cita(citas_dao.obtener_citas().index(citas[i]))
-
-                    citas_dao.eliminar_cita(citas_dao.obtener_citas().index(citas[i]))
-
                     print(" Cita cancelada.")
                 except Exception:
                     print(" Datos inválidos.")

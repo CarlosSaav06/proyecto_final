@@ -6,4 +6,4 @@ class Cita:
         self.estado = "Pendiente"
 
     def __str__(self):
-        return f"{self.dia} {self.hora} - {self.estudiante.nombre} ({self.estado})"
+        return f"{self.dia} {self.hora} - {self.docente.nombre} ({self.estado})"

@@ -1,2 +1,3 @@
 cfugarte@uamv.edu.ni,saavedra06,E
 pedro@uamv.edu.ni,123456,D
+juan@uamv.edu.ni,9876,D
