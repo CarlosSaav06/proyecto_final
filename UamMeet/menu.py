@@ -27,7 +27,7 @@ def menu_docente():
 
         opc = input("Opción: ")
         if opc == "1":
-            print("\n📅 Registrar nueva disponibilidad")
+            print("\n Registrar nueva disponibilidad")
             nombre = input("Nombre del docente: ")
             correo = input("Correo del docente: ")
             docente = Docente(nombre, correo)
@@ -38,7 +38,7 @@ def menu_docente():
             disponibilidad = Disponibilidad(dia, hora, docente)
             disponibilidad_dao.agregar_disponibilidad(disponibilidad)
 
-            print("✅ Disponibilidad registrada correctamente.")
+            print(" Disponibilidad registrada correctamente.")
         elif opc == "2":
            for i, disp in enumerate(disponibilidad_dao.obtener_disponibilidad(), 1):
                 print(f"{i}. {disp}")
@@ -82,7 +82,7 @@ def menu_estudiante():
             estudiante = estudiante_dao.registrar_estudiante(nombre, correo)
             disp = disponibilidad_dao.obtener_disponibilidad()
             if not disp:
-                     print("❌ No hay horarios disponibles. Intenta más tarde o consulta con tu docente.")
+                     print(" No hay horarios disponibles. Intenta más tarde o consulta con tu docente.")
                      continue
 
             else:
@@ -96,9 +96,9 @@ def menu_estudiante():
                     disponibilidad_dao.eliminar_disponibilidad(i)
                     cita_dao.agregar_cita(cita)
                     disponibilidad_dao.eliminar_disponibilidad(i)
-                    print("✅ Cita agendada.")
+                    print(" Cita agendada.")
                 except Exception:
-                    print("❌ Entrada inválida.")
+                    print(" Entrada inválida.")
         elif opc == "3":
             correo = input("Ingrese su correo para filtrar: ").strip().lower()
             citas_usuario = [
@@ -107,9 +107,9 @@ def menu_estudiante():
             ]
     
             if not citas_usuario:
-              print("📭 No se encontraron citas asociadas a este correo.")
+              print(" No se encontraron citas asociadas a este correo.")
             else:
-              print("📅 Tus citas:")
+              print(" Tus citas:")
             for i, c in enumerate(citas_usuario, 1):
               print(f"{i}. {c}")
 
