@@ -47,6 +47,7 @@ def menu_docente(correo):  # Menu para que el docente realice diferentes accione
         print("4. Volver al menú principal")
 
         opc = input("Opción: ")
+        if opc == "1":
         if opc == "1":  # registrar nueva disponibilidad de horario para citas
             print("\n Registrar nueva disponibilidad")
             nombre = input("Nombre del docente: ")
@@ -61,6 +62,11 @@ def menu_docente(correo):  # Menu para que el docente realice diferentes accione
             disponibilidad_dao.agregar_disponibilidad(disponibilidad)
 
             print(" Disponibilidad registrada correctamente.")
+        elif opc == "2":
+           for i, disp in enumerate(disponibilidad_dao.obtener_disponibilidad(), 1):
+                print(f"{i}. {disp}")
+        elif opc == "3":
+            pendientes = [c for c in cita_dao.obtener_citas() if c.estado == "Pendiente"]
 
         elif opc == "2": # Mostrar las disponibilidades que se han registrado
            disponibilidad = disponibilidad_dao.obtener_disponibilidad()
@@ -122,6 +128,9 @@ def menu_estudiante(correo):  # Menu para que el estudiante pueda realizar difer
             estudiante = estudiante_dao.registrar_estudiante(nombre, correo)
             disp = disponibilidad_dao.obtener_disponibilidad()
             if not disp:
+                     print(" No hay horarios disponibles. Intenta más tarde o consulta con tu docente.")
+                     continue
+
                 print(" No hay horarios disponibles. Intenta más tarde o consulta con tu docente.")
                 continue
             else:
@@ -135,6 +144,8 @@ def menu_estudiante(correo):  # Menu para que el estudiante pueda realizar difer
                     citas_dao.agregar_cita(cita)
                     disponibilidad_dao.eliminar_disponibilidad(i)
                     print(" Cita agendada.")
+                except Exception:
+                    print(" Entrada inválida.")
                 except (ValueError, IndexError, AttributeError) as e:
                     print("Por favor, ingresa un número válido de la lista.")
 
@@ -167,6 +178,11 @@ def menu_estudiante(correo):  # Menu para que el estudiante pueda realizar difer
                     print(f"{i}. {c}")
                 try:
                     i = int(input("Cancelar cita #: ")) - 1
+                    cita_dao.eliminar_cita(cita_dao.obtener_citas().index(citas[i]))
+                    print(" Cita cancelada.")
+                except Exception:
+                    print(" Datos inválidos.")
+        elif opc == "5":
                     citas_dao.eliminar_cita(citas_dao.obtener_citas().index(citas[i]))
                     print(" Cita cancelada.")
                 except Exception:
