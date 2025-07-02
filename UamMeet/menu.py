@@ -126,9 +126,9 @@ def menu_estudiante():
                 try:
                     i = int(input("Cancelar cita #: ")) - 1
                     cita_dao.eliminar_cita(cita_dao.obtener_citas().index(citas[i]))
-                    print("🗑️ Cita cancelada.")
+                    print(" Cita cancelada.")
                 except Exception:
-                    print("❌ Datos inválidos.")
+                    print(" Datos inválidos.")
         elif opc == "5":
             break
         else:
