@@ -23,7 +23,7 @@ def ejecutar_menu():  # ciclo principal que pregunta si el usuario ingresa como 
         else:
             print("Rol no válido. Intente de nuevo.")
 
-# Debes implementar esta función según cómo almacenes tus usuarios:
+
 def validar_usuario(rol, correo, contrasena):
     # Ejemplo si tienes un archivo usuarios.txt con líneas: correo,contrasena,rol
     try:
@@ -47,41 +47,36 @@ def menu_docente(correo):  # Menu para que el docente realice diferentes accione
         print("4. Volver al menú principal")
 
         opc = input("Opción: ")
-        if opc == "1":
         if opc == "1":  # registrar nueva disponibilidad de horario para citas
-            print("\n Registrar nueva disponibilidad")
-            nombre = input("Nombre del docente: ")
-            correo = input("Correo del docente: ")
-            docente = Docente(nombre, correo)
+                print("\n Registrar nueva disponibilidad")
+                nombre = input("Nombre del docente: ")
+                correo = input("Correo del docente: ")
+                docente = Docente(nombre, correo)
 
-            dia = input("Día disponible: ")
-            hora = input("Hora disponible: ")
+                dia = input("Día disponible: ")
+                hora = input("Hora disponible: ")
 
-             # Crear objeto disponibilidad y agregarlo a la base de datos (DAO)
-            disponibilidad = Disponibilidad(dia, hora, docente)
-            disponibilidad_dao.agregar_disponibilidad(disponibilidad)
+                # Crear objeto disponibilidad y agregarlo a la base de datos (DAO)
+                disponibilidad = Disponibilidad(dia, hora, docente)
+                disponibilidad_dao.agregar_disponibilidad(disponibilidad)
 
-            print(" Disponibilidad registrada correctamente.")
-        elif opc == "2":
-           for i, disp in enumerate(disponibilidad_dao.obtener_disponibilidad(), 1):
-                print(f"{i}. {disp}")
-        elif opc == "3":
-            pendientes = [c for c in cita_dao.obtener_citas() if c.estado == "Pendiente"]
+                print(" Disponibilidad registrada correctamente.")
+    
 
         elif opc == "2": # Mostrar las disponibilidades que se han registrado
-           disponibilidad = disponibilidad_dao.obtener_disponibilidad()
-           if not disponibilidad:
-               print("No hay horarios disponibles en este momento.")
-           else:
+            disponibilidad = disponibilidad_dao.obtener_disponibilidad()
+            if not disponibilidad:
+                print("No hay horarios disponibles en este momento.")
+            else:
                 # Listar las disponibilidades con numeración
-               for i, disp in enumerate(disponibilidad_dao.obtener_disponibilidad(), 1):
-                print(f"{i}. {disp.dia} {disp.hora}")
+                for i, disp in enumerate(disponibilidad_dao.obtener_disponibilidad(), 1):
+                    print(f"{i}. {disp.dia} {disp.hora}")
 
         elif opc == "3":  # Ver y gestionar citas pendientes, ya sea aceptarlas o rechazarlas
             # Filtrar solo las citas pendientes del docente actual
             pendientes = [
                 c for c in citas_dao.obtener_citas()
-                if c.estado == "Pendiente" and hasattr(c, "docente") and c.docente.correo == correo
+                if c.estado == "Pendiente" and hasattr(c, "estudiante") and c.docente.correo == correo
             ]
             if not pendientes:
                 print("No hay citas pendientes.")
@@ -114,80 +109,70 @@ def menu_estudiante(correo):  # Menu para que el estudiante pueda realizar difer
         print("5. Salir")
 
         opc = input("Opción: ")
+
         if opc == "1": # Mostrar horarios disponibles para agendar
             disponibilidad = disponibilidad_dao.obtener_disponibilidad()
             if not disponibilidad:
                 print("No hay horarios disponibles en este momento.")
             else:
                 for i, disp in enumerate(disponibilidad_dao.obtener_disponibilidad(), 1):
-                     print(f"{i}. {disp.dia} {disp.hora}")
+                    print(f"{i}. {disp.dia} {disp.hora}")
 
-                    
         elif opc == "2": # Agendar una cita en un horario disponible
             nombre = input("Nombre: ")
             estudiante = estudiante_dao.registrar_estudiante(nombre, correo)
             disp = disponibilidad_dao.obtener_disponibilidad()
             if not disp:
-                     print(" No hay horarios disponibles. Intenta más tarde o consulta con tu docente.")
-                     continue
-
                 print(" No hay horarios disponibles. Intenta más tarde o consulta con tu docente.")
                 continue
-            else:
-                for idx, disponibilidad in enumerate(disp, 1):
-                    print(f"{idx}. {disponibilidad}")
-                try:
-                    i = int(input("Elija horario: ")) - 1
-                    seleccion = disp[i]
-                    docente = seleccion.docente
-                    cita = Cita(estudiante, seleccion.dia, seleccion.hora, docente)
-                    citas_dao.agregar_cita(cita)
-                    disponibilidad_dao.eliminar_disponibilidad(i)
-                    print(" Cita agendada.")
-                except Exception:
-                    print(" Entrada inválida.")
-                except (ValueError, IndexError, AttributeError) as e:
-                    print("Por favor, ingresa un número válido de la lista.")
+
+            for idx, disponibilidad in enumerate(disp, 1):
+                print(f"{idx}. {disponibilidad.dia} {disponibilidad.hora} - Docente: {disponibilidad.docente.nombre}")
+        
+            try:
+                i = int(input("Elija horario: ")) - 1
+                seleccion = disp[i]
+                docente = seleccion.docente
+                cita = Cita(estudiante, seleccion.dia, seleccion.hora, docente)
+                citas_dao.agregar_cita(cita)
+                disponibilidad_dao.eliminar_disponibilidad(i)
+                print(" Cita agendada.")
+            except Exception:
+                print(" Entrada inválida.")
+            
 
         elif opc == "3":
             # Mostrar todas las citas del estudiante con ese correo
             citas_usuario = [
-
-            c for c in citas_dao.obtener_citas()
-
-        
-            if c.estudiante.correo.strip().lower() == correo
+                c for c in citas_dao.obtener_citas()
+                if c.estudiante.correo.strip().lower() == correo
             ]
-    
+
             if not citas_usuario:
-              print(" No se encontraron citas asociadas a este correo.")
+                print(" No se encontraron citas asociadas a este correo.")
             else:
-              print(" Tus citas:")
+                print(" Tus citas:")
             for i, c in enumerate(citas_usuario, 1):
-              print(f"{i}. {c}")
+                print(f"{i}. {c}")
 
-
-    
-        elif opc == "4":  # Cancelar una cita existente
-            
-            citas = [c for c in citas_dao.obtener_citas() if c.estudiante.correo == correo]
+        elif opc == "4":  # Cancelar una cita
+            citas = [c for c in citas_dao.obtener_citas() if c.estudiante.correo.strip().lower() == correo]
             if not citas:
-                print("No tiene citas.")
+                print(" No tienes citas agendadas.")
+                
             else:
                 for i, c in enumerate(citas, 1):
                     print(f"{i}. {c}")
                 try:
-                    i = int(input("Cancelar cita #: ")) - 1
-                    cita_dao.eliminar_cita(cita_dao.obtener_citas().index(citas[i]))
-                    print(" Cita cancelada.")
-                except Exception:
-                    print(" Datos inválidos.")
-        elif opc == "5":
+                    i = int(input("Seleccione cita a cancelar: ")) - 1
                     citas_dao.eliminar_cita(citas_dao.obtener_citas().index(citas[i]))
-                    print(" Cita cancelada.")
+                    print("Cita cancelada.")
                 except Exception:
-                    print(" Datos inválidos.")
-        elif opc == "5":  # Salir del menú estudiante
-            break
+                    print("Datos invalidos")
+
+        elif opc == "5":  # Salir del menú de los estudiantes
+            print("Saliendo del menú estudiante.")
+            break    
+        
         else:
             print("Opción no válida.")
